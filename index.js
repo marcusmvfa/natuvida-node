@@ -19,9 +19,9 @@ const uri = 'mongodb+srv://admin:9844@clusternatuvida.v83d2.mongodb.net/natuvida
 //     //client.close();
 // });
 const client = new MongoClient(uri);
-let port = 3000;
-app.listen(process.env.PORT || 3000, () => {
-    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+let port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log("Express server listening on port %d in %s mode", process.env.PORT, app.settings.env);
     client.connect();
 });
 
