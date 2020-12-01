@@ -25,34 +25,6 @@ app.listen(port, () => {
     client.connect();
 });
 
-async function main(){
-    /**
-     * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
-     * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
-     */
-
-    // client = new MongoClient(uri);
- 
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();
- 
-        // Make the appropriate DB calls
-        await  listDatabases(client);
-        await listUsers(client);
- 
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-}
-async function listDatabases(client){
-    databasesList = await client.db().admin().listDatabases();
- 
-    console.log("Databases:");
-    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-};
 async function listUsers(){
     try {
         
@@ -63,7 +35,17 @@ async function listUsers(){
         // await client.close();
     }
 };
-// main().catch(console.error);
+
+async function listPostagens(){
+    try {
+        
+        return await client.db('natuvida-mongo').collection('postagens').find({}).toArray()
+    } catch(err){
+        console.log(err);
+    } finally{
+        // await client.close();
+    }
+};
 
 async function getUsers(req, res, next) {
     try {
@@ -77,5 +59,18 @@ async function getUsers(req, res, next) {
         next(exception)
     }
 }
+async function getPostagens(req, res, next) {
+    try {
+        let users = await listUsers()
+        console.log('### Posts ###')
+        console.log(users)
+        res.json(users)
+    } catch (exception) {
+        console.log('@@@')
+        console.log(exception)
+        next(exception)
+    }
+}
 
 app.get('/', getUsers)
+app.get('/postagens', getPostagens)
