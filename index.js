@@ -61,7 +61,7 @@ async function getUsers(req, res, next) {
 }
 async function getPostagens(req, res, next) {
     try {
-        let users = await listUsers()
+        let users = await listPostagens()
         console.log('### Posts ###')
         console.log(users)
         res.json(users)
