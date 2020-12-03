@@ -6,6 +6,7 @@ const {MongoClient} = require('mongodb');
 app.use('/smartphones', smartphone);
 var db ={};
 const uri = 'mongodb+srv://admin:9844@clusternatuvida.v83d2.mongodb.net/natuvida-mongo?retryWrites=true&w=majority';
+const path = require('path');
 // var ObjectId = require('mongodb').ObjectID;
 // const client = MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 // client.connect((err, client) => {
@@ -72,5 +73,29 @@ async function getPostagens(req, res, next) {
     }
 }
 
-app.get('/', getUsers)
-app.get('/postagens', getPostagens)
+app.get('/', getUsers);
+app.get('/postagens', getPostagens);
+app.get('/autoconhecimento', function(req,res){
+        res.sendFile(__dirname + '/imagens/AUTOCONHECIMENTO.jpg');
+});
+app.get('/cerebro', function(req,res){
+        res.sendFile(__dirname + '/imagens/CEREBRO.jpg');
+});
+app.get('/dordocliente', function(req,res){
+        res.sendFile(__dirname + '/imagens/DORDOCLIENTE.jpg');
+});
+app.get('/emocoes', function(req,res){
+        res.sendFile(__dirname + '/imagens/EMOCOES.jpg');
+});
+app.get('/mindset', function(req,res){
+        res.sendFile(__dirname + '/imagens/MINDSET.jpg');
+});
+app.get('/motivacao', function(req,res){
+        res.sendFile(__dirname + '/imagens/MOTIVACAO.jpg');
+});
+app.get('/tecnicasdevenda', function(req,res){
+        res.sendFile(__dirname + '/imagens/TECNICASDEVENDAS.jpg');
+});
+app.get('/maslow', function(req,res){
+        res.sendFile(__dirname + '/imagens/maslow.jpg');
+});
