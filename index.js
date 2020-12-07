@@ -4,6 +4,7 @@ const smartphone = require('./routes/smartphonesRoutes'); // Importa rota
 const app = express();
 const {MongoClient} = require('mongodb');
 app.use('/smartphones', smartphone);
+app.use(bodyParser.json());
 var db ={};
 const uri = 'mongodb+srv://admin:9844@clusternatuvida.v83d2.mongodb.net/natuvida-mongo?retryWrites=true&w=majority';
 const path = require('path');
@@ -48,6 +49,19 @@ async function listPostagens(){
     }
 };
 
+async function sendResposta(json){
+try {
+    await client.db('natuvida-mongo').collection('respostas').insertOne(json, function(err, res){
+        if(err)
+            throw err;
+        console.log('###');
+        console.log(res);
+    });
+} catch(err){
+    console.log(err);
+}
+};
+
 async function getUsers(req, res, next) {
     try {
         let users = await listUsers()
@@ -70,6 +84,16 @@ async function getPostagens(req, res, next) {
         console.log('@@@')
         console.log(exception)
         next(exception)
+    }
+}
+
+async function postResposta(req, res, next){
+    try{
+        console.log(req.body);
+    }catch (exception){
+console.log('@@@');
+console.log(exception);
+next(exception);
     }
 }
 
@@ -99,3 +123,4 @@ app.get('/tecnicasdevenda', function(req,res){
 app.get('/maslow', function(req,res){
         res.sendFile(__dirname + '/imagens/maslow.jpg');
 });
+app.post('/postResposta', postResposta);
