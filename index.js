@@ -99,3 +99,6 @@ app.get('/tecnicasdevenda', function(req,res){
 app.get('/maslow', function(req,res){
         res.sendFile(__dirname + '/imagens/maslow.jpg');
 });
+app.get('/muitobem', function(req,res){
+        res.sendFile(__dirname + '/imagens/Trabalhando.jpg');
+});
