@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const smartphone = require('./routes/smartphonesRoutes'); // Importa rota
 const app = express();
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 app.use('/smartphones', smartphone);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 var db ={};
 const uri = 'mongodb+srv://admin:9844@clusternatuvida.v83d2.mongodb.net/natuvida-mongo?retryWrites=true&w=majority';
 const path = require('path');
@@ -47,6 +49,39 @@ async function listPostagens(){
         // await client.close();
     }
 };
+async function listPostagensDetalhes(){
+    try {
+        var jsonDetalhes = await client.db('natuvida-mongo').collection('postagens').find({}).toArray();
+        jsonDetalhes.forEach(async function(element) {
+            var o = ObjectId(element._id);
+            var lstDetalhes = [];
+            element.postagemDetalhes.forEach(async function(el){
+                el.idPostagem = o;
+                lstDetalhes.push(el);
+            });
+            // await client.db('natuvida-mongo').collection('perguntas').insertMany(lstDetalhes);
+            console.log(lstDetalhes);
+        });
+        // console.log(array);
+        return jsonDetalhes
+    } catch(err){
+        console.log(err);
+    } finally{
+        // await client.close();
+    }
+};
+
+async function postUser(user){
+    try{
+        var response = await client.db('natuvida-mongo').collection('users').insertOne(user);
+        console.log(response);
+
+    } catch (exception) {
+        console.log('@@@')
+        console.log(exception)
+        next(exception)
+    }
+};
 
 async function getUsers(req, res, next) {
     try {
@@ -72,9 +107,37 @@ async function getPostagens(req, res, next) {
         next(exception)
     }
 }
+async function getPostagensDetalhes(req, res, next) {
+    try {
+        let users = await listPostagensDetalhes()
+        console.log('### PostsDetalhes ###')
+        console.log(users)
+        res.json(users)
+    } catch (exception) {
+        console.log('@@@')
+        console.log(exception)
+        next(exception)
+    }
+}
+
+async function postNewUser(req, res, next){
+    try {
+        await postUser(req.body);
+        console.log('### Post New User');
+        console.log(req.body);
+    } catch(exception){
+        console.log('@@@');
+        console.log(exception);
+        next(exception);
+    }
+}
+
+app.post('/postNewUser', postNewUser);
 
 app.get('/', getUsers);
 app.get('/postagens', getPostagens);
+app.get('/postagemDetalhes', getPostagensDetalhes);
+
 app.get('/autoconhecimento', function(req,res){
         res.sendFile(__dirname + '/imagens/AUTOCONHECIMENTO.jpg');
 });
