@@ -83,6 +83,24 @@ async function postUser(user){
     }
 };
 
+async function cadastroDetalhes(list){
+    try{
+        list.forEach(element => {
+            var object = ObjectId(element.idPostagem);
+            element.idPostagem = object;
+             dataNow = Date.now();
+             element.dataInclusao = new Date(dataNow).toLocaleDateString();
+        });
+        var response = await client.db('natuvida-mongo').collection('perguntas').insertMany(list);        
+        console.log(response);
+        return response;
+
+    } catch (exception) {
+        console.log('@@@')
+        console.log(exception)
+    }
+}
+
 async function getUsers(req, res, next) {
     try {
         let users = await listUsers()
@@ -131,12 +149,24 @@ async function postNewUser(req, res, next){
         next(exception);
     }
 }
+async function postDetalhes(req,res, next){
+    try {
+        console.log('### Post Detalhes');
+        console.log(req.body);
+        return await cadastroDetalhes(req.body);
+    } catch(exception){
+        console.log('@@@');
+        console.log(exception);
+        next(exception);
+    }
+}
 
 app.post('/postNewUser', postNewUser);
+app.post('/postDetalhes', postDetalhes)
 
 app.get('/', getUsers);
-app.get('/postagens', getPostagens);
-app.get('/postagemDetalhes', getPostagensDetalhes);
+app.get('/getPostagens', getPostagens);
+app.get('/getPostagemDetalhes', getPostagensDetalhes);
 
 app.get('/autoconhecimento', function(req,res){
         res.sendFile(__dirname + '/imagens/AUTOCONHECIMENTO.jpg');
