@@ -78,11 +78,19 @@ async function postUser(user){
 
     } catch (exception) {
         console.log('@@@')
-        console.log(exception)
-        next(exception)
+        console.log(exception);
     }
 };
-
+async function reqLogin(loginData){
+    try{
+        var response = await client.db('natuvida-mongo').collection('users').findOne({'email': loginData.email, 'senha': loginData.senha});
+            return response;
+    } catch(exception){
+        console.log('@@@')
+        console.log(exception);
+        return exception;
+    }
+};
 async function cadastroDetalhes(list){
     try{
         list.forEach(element => {
@@ -160,9 +168,23 @@ async function postDetalhes(req,res, next){
         next(exception);
     }
 }
+async function login(req, res, next){
+    try {
+        console.log('### Login');
+        console.log(req.body);
+        var response = await reqLogin(req.body);
+return res.json(response);
+
+    } catch(exception){
+        console.log('@@@');
+        console.log(exception);
+        next(exception);
+    }
+}
 
 app.post('/postNewUser', postNewUser);
-app.post('/postDetalhes', postDetalhes)
+app.post('/postDetalhes', postDetalhes);
+app.post('/login', login)
 
 app.get('/', getUsers);
 app.get('/getPostagens', getPostagens);
