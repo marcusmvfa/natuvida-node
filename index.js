@@ -49,9 +49,9 @@ async function listPostagens(){
         // await client.close();
     }
 };
-async function listPostagensDetalhes(){
+async function listPostagensDetalhes(id){
     try {
-        var jsonDetalhes = await client.db('natuvida-mongo').collection('postagens').find({}).toArray();
+        var jsonDetalhes = await client.db('natuvida-mongo').collection('perguntas').find({"idPostagem": ObjectId(id)}).toArray();
         jsonDetalhes.forEach(async function(element) {
             var o = ObjectId(element._id);
             var lstDetalhes = [];
@@ -135,7 +135,7 @@ async function getPostagens(req, res, next) {
 }
 async function getPostagensDetalhes(req, res, next) {
     try {
-        let users = await listPostagensDetalhes()
+        let users = await listPostagensDetalhes(req.query.id)
         console.log('### PostsDetalhes ###')
         console.log(users)
         res.json(users)
