@@ -9,6 +9,7 @@ app.use(bodyParser.json());
 var db ={};
 const uri = 'mongodb+srv://admin:9844@clusternatuvida.v83d2.mongodb.net/natuvida-mongo?retryWrites=true&w=majority';
 const path = require('path');
+const { response } = require('express');
 // var ObjectId = require('mongodb').ObjectID;
 // const client = MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 // client.connect((err, client) => {
@@ -85,6 +86,31 @@ async function reqLogin(loginData){
     try{
         var response = await client.db('natuvida-mongo').collection('users').findOne({'email': loginData.email, 'senha': loginData.senha});
             return response;
+    } catch(exception){
+        console.log('@@@')
+        console.log(exception);
+        return exception;
+    }
+};
+async function sendRespostas(respostas){
+    try{
+        var idsPerguntas = [];
+        respostas.forEach((element) => {
+            element.dataInclusao = new Date().toISOString();
+            idsPerguntas.push(element.idPergunta);
+        });
+        var historico = [];
+        var response = await client.db('natuvida-mongo').collection('respostas').insertMany(respostas);
+        var i;
+        for (i = 0; i < response.insertedCount; i++) {
+            historico.push({
+                "idPergunta": ObjectId(idsPerguntas[i]),
+                "idResposta": ObjectId(response.insertedIds[i]), 
+                "idUsuario": ObjectId(respostas[0].idUsuario),
+                "dataInclusao": new Date().toISOString()});
+          }
+        var responseHistorico = await client.db('natuvida-mongo').collection('historico').insertMany(historico);
+        return responseHistorico;        
     } catch(exception){
         console.log('@@@')
         console.log(exception);
@@ -182,9 +208,23 @@ return res.json(response);
     }
 }
 
+async function postResposta(req, res, next){
+    try{
+        console.log('### Post Resposta');
+        console.log(req.body);
+        var response = await sendRespostas(req.body);
+return res.json(response);
+    } catch(exception){
+        console.log("@@@");
+        console.log(exception);
+        next(exception);
+    }
+}
+
 app.post('/postNewUser', postNewUser);
 app.post('/postDetalhes', postDetalhes);
-app.post('/login', login)
+app.post('/login', login);
+app.post('/postRespostas', postResposta);
 
 app.get('/', getUsers);
 app.get('/getPostagens', getPostagens);
