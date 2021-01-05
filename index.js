@@ -274,3 +274,18 @@ app.get('/maslow', function(req,res){
 app.get('/muitobem', function(req,res){
         res.sendFile(__dirname + '/imagens/Trabalhando.jpg');
 });
+app.get('/Comportamento-Pessoal', function(req,res){
+    res.sendFile(__dirname + '/imagens/Comportamento-Pessoal.jpg');
+});
+app.get('/Pos-Venda', function(req,res){
+    res.sendFile(__dirname + '/imagens/Pos-Venda.jpg');
+});
+app.get('/Relacao-Cliente', function(req,res){
+    res.sendFile(__dirname + '/imagens/Relacao-Cliente.jpg');
+});
+app.get('/Quanto-Conteudo', function(req,res){
+    res.sendFile(__dirname + '/imagens/Quanto-Conteudo.jpg');
+});
+app.get('/Finalizamos', function(req,res){
+    res.sendFile(__dirname + '/imagens/Finalizamos.jpg');
+});
