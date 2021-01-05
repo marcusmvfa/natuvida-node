@@ -73,13 +73,22 @@ async function listPostagensDetalhes(id){
 };
 
 async function postUser(user){
+    ///usuario ja cadastrado = E001
+    ///outro erro = E002
     try{
-        var response = await client.db('natuvida-mongo').collection('users').insertOne(user);
-        console.log(response);
+        var usuario = await client.db('natuvida-mongo').collection('users').findOne({"email": user.email});
+        if(usuario == null){
+            var response = await client.db('natuvida-mongo').collection('users').insertOne(user);
+            console.log(response);
+            return response;
+        }
+        else 
+        return "E001";
 
     } catch (exception) {
         console.log('@@@')
         console.log(exception);
+        return "E002";
     }
 };
 async function reqLogin(loginData){
@@ -174,12 +183,19 @@ async function getPostagensDetalhes(req, res, next) {
 
 async function postNewUser(req, res, next){
     try {
-        await postUser(req.body);
+        var response = await postUser(req.body);
         console.log('### Post New User');
         console.log(req.body);
+        if(response == "E001")
+            res.status(500).send("E-mail já cadastrado!")
+        else if(response == "E002")
+            res.status(500).send("Ocorreu um erro tente novamente!");
+        else
+            res.status(200).json(response);
     } catch(exception){
         console.log('@@@');
         console.log(exception);
+        res.status(500).send("Não foi possível salvar o usuário");
         next(exception);
     }
 }
@@ -217,6 +233,7 @@ return res.json(response);
     } catch(exception){
         console.log("@@@");
         console.log(exception);
+        res.status(500).send(exception);
         next(exception);
     }
 }
