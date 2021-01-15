@@ -126,6 +126,21 @@ async function sendRespostas(respostas){
         return exception;
     }
 };
+async function updateUSer(user){
+    try {
+        user.dataAlteracao = new Date().toISOString();
+        var response = await client.db('natuvida-mongo')
+        .collection('users')
+        .updateOne({"_id": ObjectId(user._id)},
+        {$set: {"nome":user.nome, "email": user.email, "fone": user.fone}});
+        console.log('s');
+        return response;
+    } catch (exception) {
+        console.log('@@@')
+        console.log(exception);
+        return exception;
+    }
+}
 async function cadastroDetalhes(list){
     try{
         list.forEach(element => {
@@ -238,10 +253,25 @@ return res.json(response);
     }
 }
 
+async function putUser(req, res, next){
+    try{
+        console.log('### Put User');
+        console.log(req.body);
+        var response = await updateUSer(req.body);
+return res.json(response);
+    } catch(exception){
+        console.log("@@@");
+        console.log(exception);
+        res.status(500).send(exception);
+        next(exception);
+    }
+}
+
 app.post('/postNewUser', postNewUser);
 app.post('/postDetalhes', postDetalhes);
 app.post('/login', login);
 app.post('/postRespostas', postResposta);
+app.put('/putUser', putUser)
 
 app.get('/', getUsers);
 app.get('/getPostagens', getPostagens);
